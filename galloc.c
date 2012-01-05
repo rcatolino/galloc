@@ -1,17 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
+#include "block.h"
 
-#define TRACE(a,b) printf(a,b)
-#define MMAP_THRESHOLD 0x20000
-#define BLOCKSIZE MMAP_THRESHOLD+sizeof(struct block)
-
-struct block {
-  unsigned int size;
-  struct block * next;
-  struct block * prev;
-};
-
-static int initialized=0;
 static struct block * firstFreeBlock=NULL;
 static struct block * firstUsedBlock=NULL;
 
@@ -33,7 +23,7 @@ static struct block * getBlock(struct block * lastBlock)
   newBlock->size=MMAP_THRESHOLD;
   newBlock->next=NULL;
   newBlock->prev=lastBlock;
-  TRACE("Is this the first block?.\n",newBlock);
+  TRACE("Is this the first block?. %p\n",newBlock);
   if (lastBlock)
   {
     TRACE("No, adding block at end of free linked list, %p\n",sbrk(0));
@@ -112,12 +102,3 @@ void * galloc(int requestSize)
     return NULL;
   return alloc(requestSize);
 }
-//Test function :
-int main(int argc, char * argv[])
-{
-  int * a = galloc(sizeof(int));
-  TRACE("Got pointer to %p.\n",a);
-  *a = 4;
-  return 0;
-}
-

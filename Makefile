@@ -1,24 +1,31 @@
-#Variables utilisées :
-CC=gcc #Compilateur
+CC=gcc #Compiler
 EDL=gcc #Linker
-CCFLAGS=-Wall #Options de compilations
-EDLFLAGS=-Wall
-EXE=galloc #Nom du binaire à construire
+AR=ar #Archiver
+CCFLAGS=-Wall #Compiler options
+EDLFLAGS=-Wall #Linker options
+EXE=test #Binary name
+LIB=gmem.a #Static library name
+DEFINES=NODEBUG #Preprocessor definitions
 ECHO=@echo
 
-OBJ=galloc.o
-LIBS=
+EOBJ=test.o
+LOBJ=galloc.o gfree.o
 
 
 
-$(EXE): $(OBJ) $(LIBS)
+$(EXE): $(EOBJ) $(LIB)
 	@echo building $<
-	$(EDL)  -o $(EXE) $(EDLFLAGS) $(OBJ) $(LIBS)
+	$(EDL)  -o $(EXE) $(EDLFLAGS) $(EOBJ) $(LIB)
 	@echo done
 
-%.o : %.cpp *.h
+$(LIB): $(LOBJ)
+	@echo building $<
+	$(AR)  rcs $(LIB) $(LOBJ)
+	@echo done
+
+%.o : %.c *.h
 	@echo building $< ...
-	$(CC) $(CCFLAGS) -c $<
+	$(CC) $(CCFLAGS) -c -D $(DEFINES) $<
 	@echo done
 	
 clean: 
