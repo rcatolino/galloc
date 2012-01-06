@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include "block.h"
 
-static struct block * firstFreeBlock=NULL;
-static struct block * firstUsedBlock=NULL;
 
 static void * blkalloc(int blocksize)
 {
@@ -49,7 +47,7 @@ static struct block * split(struct block * freeBlock, int newBlockSize)
   }
   TRACE("Create new used block of size %d bytes with this spare space.\n",newBlockSize);   
   TRACE("Free block size is now 0x%x bytes.\n",freeBlock->size);
-  usedBlock=(void*)((long)freeBlock+freeBlock->size);
+  usedBlock=(void*)((long)freeBlock+sizeof (struct block)+freeBlock->size);
   TRACE("New block address is %p.\n",usedBlock);
   usedBlock->size=newBlockSize;
   usedBlock->prev=NULL;
