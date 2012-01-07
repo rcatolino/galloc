@@ -24,7 +24,11 @@ static struct block * getBlock(struct block * lastBlock)
   TRACE("Is this the first block?. %p\n",newBlock);
   if (lastBlock)
   {
-    TRACE("No, adding block at end of free linked list, %p\n",sbrk(0));
+    if (lastBlock->next){
+      lastBlock->next->prev=newBlock;
+      newBlock->next=lastBlock->next;
+    }
+    TRACE("No, adding block in free linked list, %p\n",sbrk(0));
     lastBlock->next=newBlock;
   } else {
     TRACE("Yes, %p\n",sbrk(0));
@@ -35,23 +39,27 @@ static struct block * split(struct block * freeBlock, int newBlockSize)
 {
   struct block * usedBlock = NULL;
   TRACE("Shrinking free block by 0x%zx bytes\n",newBlockSize+sizeof(struct block));
-  freeBlock->size-=(newBlockSize+sizeof(struct block));
-  if (freeBlock->size==0)
+  if (freeBlock->size<newBlockSize+sizeof(struct block))
   {
-    TRACE("Free block would become empty, move it to used linked list instead, %d\n",0);
-    freeBlock->size+=(newBlockSize+sizeof(struct block));
-    freeBlock->prev->next=freeBlock->next; //Delete block from free block list
-    freeBlock->next=firstUsedBlock;
+    TRACE("Free block %p is too small to shrink,\
+ move it to used linked list instead\n",freeBlock);
+    removeFromList(freeBlock);
+    freeBlock->next=firstUsedBlock; //Add it in front of used block list
+    freeBlock->prev=NULL;
+    firstUsedBlock->prev=freeBlock;
     firstUsedBlock=freeBlock;
     return freeBlock;
   }
-  TRACE("Create new used block of size %d bytes with this spare space.\n",newBlockSize);   
+  freeBlock->size-=(newBlockSize+sizeof(struct block));
+  TRACE("Create new used block of size %d bytes with this spare space.\n",newBlockSize); 
   TRACE("Free block size is now 0x%x bytes.\n",freeBlock->size);
   usedBlock=(void*)((long)freeBlock+sizeof (struct block)+freeBlock->size);
   TRACE("New block address is %p.\n",usedBlock);
   usedBlock->size=newBlockSize;
   usedBlock->prev=NULL;
   usedBlock->next=firstUsedBlock;
+  if (firstUsedBlock)
+    firstUsedBlock->prev=usedBlock;
   firstUsedBlock=usedBlock;
   return usedBlock;
 }
@@ -84,12 +92,12 @@ static void * alloc(int requestSize)
     i=split(bb,requestSize);
   }
   TRACE("Suitable block available at %p.\n",i);
-  return i;
+  return DATA(i);
 }
 void * galloc(int requestSize)
 {
   TRACE("0x%x bytes requested\n", requestSize);
-  TRACE("Header size is 0x%zx.\n",sizeof(int));
+  TRACE("Header size is 0x%zx.\n",sizeof(struct block));
   if (!initialized)
   {
     TRACE("First call, initializing, %p\n",sbrk(0));

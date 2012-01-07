@@ -23,8 +23,11 @@ struct block {
   struct block * prev;
 };
 
-static int initialized=0;
-static struct block * firstFreeBlock=NULL;
-static struct block * firstUsedBlock=NULL;
+extern int initialized;
+extern struct block * firstFreeBlock;
+extern struct block * firstUsedBlock;
 
+void removeFromList(struct block * toRemove);
+void printFreeList();
+void printUsedList();
 #endif

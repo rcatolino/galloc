@@ -9,7 +9,7 @@ DEFINES=NODEBUG #Preprocessor definitions
 ECHO=@echo
 
 EOBJ=test.o
-LOBJ=galloc.o gfree.o
+LOBJ=galloc.o gfree.o utils.o
 
 
 

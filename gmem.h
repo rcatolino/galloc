@@ -5,6 +5,6 @@
 #define __GMEM_H
 
 void * galloc(int size);
-void free(void * memory);
+void gfree(void * memory);
 
 #endif
