@@ -1,10 +1,12 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/mman.h>
 #include "block.h"
 
 int initialized=0;
 struct block * firstFreeBlock=NULL;
 struct block * firstUsedBlock=NULL;
+struct bblock * firstBBlock=NULL;
 
 static int merge(struct block * block1, struct block * block2)
 {
@@ -52,6 +54,7 @@ static void release(struct block * usedBlock){
 }
 void gfree(void * memory) {
   struct block * memBlock;
+  struct bblock * hugeBlock;
   TRACE("Block to free in memory at %p.\n",memory);
   if(!initialized)
   {
@@ -59,8 +62,16 @@ void gfree(void * memory) {
     return; //No memory could have been allocated
   }
   //First locate mem block in linked list
+  for (hugeBlock=firstBBlock; hugeBlock!=NULL; hugeBlock=hugeBlock->next){
+    TRACE("Checking huge block at %p.\n",hugeBlock);
+    if (BDATA(hugeBlock)==memory){
+      TRACE("Found huge block to free at address %p.\n",hugeBlock);
+      munmap(hugeBlock,hugeBlock->size);
+      return;
+    }
+  }
   for(memBlock=firstUsedBlock; memBlock!=NULL; memBlock=memBlock->next ){
-    TRACE("Checking bloc at %p.\n",memBlock);
+    TRACE("Checking block at %p.\n",memBlock);
      if (DATA(memBlock)==memory){
        TRACE("Found block to free at address %p.\n",memBlock);
        release(memBlock);

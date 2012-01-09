@@ -1,7 +1,11 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "block.h" //for testing purposes only
 #include "gmem.h"
 
+#define alloc galloc
+#define free gfree
 struct list{
   long long value;
   struct list * next;
@@ -11,10 +15,11 @@ int main(int argc, char * argv[])
 {
 
   int * a; 
+  struct list * first;
+  /*
+  struct list * i;
   int * b;
   int * c;
-  struct list * first;
-  struct list * i;
   a = galloc(sizeof(int));
   printUsedList();
   printFreeList();
@@ -52,26 +57,33 @@ int main(int argc, char * argv[])
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",a);
-  first = galloc(sizeof(struct list));
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",first);
   first->next=NULL;
   first->value=0;
-  printf("allocating 0x%lx bytes of memory.\n",150*sizeof(struct list));
-  for (*a=1; *a<550; (*a)++){
-    i=galloc(sizeof(struct list));   
+  */
+  first = alloc(sizeof(struct list));
+  a = alloc(sizeof(int));
+  /*
+  for (*a=1; *a<150000; (*a)++){
+    i=alloc(sizeof(struct list));   
     i->value=*a;
     i->next=first;
     first=i;
   }
   printf("\n");
-  printf("allocated %ld bytes of memory.\n",150*sizeof(struct list));
-  for (i=first; i!=NULL; i=i->next){
-    printf("%lld ",i->value);
+  for (*a=1; *a<150000; (*a)++){
+    i=first->next;
+    free(first);
+    first=i;
   }
   printf("\n");
-  printUsedList();
-  printFreeList();
+  */
+  free(first);
+  free(a);
+  a=alloc(MMAP_THRESHOLD+10);
+  memset(a,'a',MMAP_THRESHOLD);
+  free(a);
   return 0;
 }

@@ -1,7 +1,7 @@
 #include <unistd.h>
+#include <sys/mman.h>
 #include <stdio.h>
 #include "block.h"
-
 
 static void * blkalloc(int blocksize)
 {
@@ -97,6 +97,7 @@ static void * alloc(int requestSize)
 }
 void * galloc(int requestSize)
 {
+  struct bblock * hugeBlock;
   TRACE("0x%x bytes requested\n", requestSize);
   TRACE("Header size is 0x%zx.\n",sizeof(struct block));
   if (!initialized)
@@ -106,6 +107,20 @@ void * galloc(int requestSize)
     initialized=1;
   }
   if (requestSize>MMAP_THRESHOLD)
-    return NULL;
+  {
+    TRACE("Mapping 0x%lx bytes of memory\n",requestSize+sizeof(struct block) );
+    hugeBlock=mmap(
+    0, //Let the kernel decide which address to use for this mapping
+    requestSize+sizeof(struct bblock), //Length of memory thus allocated
+    PROT_READ | PROT_WRITE, //Memory will won't be executable
+    MAP_PRIVATE | MAP_ANONYMOUS, //Just rtfm...
+    -1,0);
+    TRACE("Got memory, at address %p\n",hugeBlock);
+    hugeBlock->next=firstBBlock;
+    hugeBlock->size=requestSize+sizeof(struct block);
+    firstBBlock=hugeBlock;
+    return DATA(hugeBlock);
+  }
   return alloc(requestSize);
 }
+
