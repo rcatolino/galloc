@@ -33,17 +33,33 @@ void removeFromList(struct block * toRemove)
 
 void printFreeList()
 {
+  int length=1;
+  unsigned long int total=0;
   struct block * i;
   for(i=firstFreeBlock; i!=NULL; i=i->next)
   {
-    printf("Free block at %p with %x bytes\n",i,i->size);
+    length++;
+    total+=i->size;
+    //printf("Free block at %p with %x bytes\n",i,i->size);
   }
+  printf("There is %d blocks free, with an average of %ld \
+bytes per block.\n",length,total/length);
+  printf("The total free \
+memory is %ld bytes\n",total);
 }
 void printUsedList()
 {
+  int length=1;
+  unsigned long int total=0;
   struct block * i;
   for(i=firstUsedBlock; i!=NULL; i=i->next)
   {
-    printf("Used block at %p with %x bytes\n",i,i->size);
+    length++;
+    total+=i->size;
+  //  printf("Used block at %p with %x bytes\n",i,i->size);
   }
+printf("There is %d blocks allocated, with an average of %ld \
+bytes per block.\n",length,total/length);
+printf("The total allocated memory is %ld bytes, the total used \
+memory is %ld bytes\n",BLOCKSIZE+total%BLOCKSIZE,total);
 }

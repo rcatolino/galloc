@@ -21,7 +21,7 @@ static struct block * getBlock(struct block * lastBlock)
   newBlock->size=MMAP_THRESHOLD;
   newBlock->next=NULL;
   newBlock->prev=lastBlock;
-  TRACE("Is this the first block?. %p\n",newBlock);
+  TRACE("Is this the first block?. %p\n",lastBlock);
   if (lastBlock)
   {
     if (lastBlock->next){
@@ -86,7 +86,8 @@ static void * alloc(int requestSize)
   {
     TRACE("No suitable block found for 0x%x bytes.\n",requestSize);
     //We need another block :
-    getBlock(pb);
+    TRACE("Append block after end of list: %p\n",pb);
+    pb=getBlock(pb);
     i=split(pb,requestSize);
   } else {
     i=split(bb,requestSize);

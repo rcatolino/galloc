@@ -8,7 +8,7 @@
   #define TRACE(a,b)
 #endif
 
-#define MMAP_THRESHOLD 0x20000
+#define MMAP_THRESHOLD 0x2000
 #define BLOCKSIZE MMAP_THRESHOLD+sizeof(struct block)
 
 //These macro can be usedr to find the data associated 
