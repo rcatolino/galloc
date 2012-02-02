@@ -4,7 +4,7 @@
 #ifndef __GMEM_H
 #define __GMEM_H
 
-void * galloc(int size);
-void gfree(void * memory);
+void * malloc(int size);
+void free(void * memory);
 
 #endif

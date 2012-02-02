@@ -71,7 +71,7 @@ static void * alloc(int requestSize)
   int bestSize = BLOCKSIZE+1;
 
   TRACE("Allocating 0x%x bytes of memory.\n",requestSize);
-  //Best Fit Test wether we have enough memory for request :
+  //Best Fit, Test wether we have enough memory for request :
   for (i=firstFreeBlock; i!=NULL; i=i->next)
   {
     if (i->size>=requestSize && i->size<bestSize) //This block is ok.
@@ -95,7 +95,7 @@ static void * alloc(int requestSize)
   TRACE("Suitable block available at %p.\n",i);
   return DATA(i);
 }
-void * galloc(int requestSize)
+void * malloc(int requestSize)
 {
   struct bblock * hugeBlock;
   TRACE("0x%x bytes requested\n", requestSize);
@@ -112,7 +112,7 @@ void * galloc(int requestSize)
     hugeBlock=mmap(
     0, //Let the kernel decide which address to use for this mapping
     requestSize+sizeof(struct bblock), //Length of memory thus allocated
-    PROT_READ | PROT_WRITE, //Memory will won't be executable
+    PROT_READ | PROT_WRITE, //Memory won't be executable
     MAP_PRIVATE | MAP_ANONYMOUS, //Just rtfm...
     -1,0);
     TRACE("Got memory, at address %p\n",hugeBlock);
@@ -121,6 +121,6 @@ void * galloc(int requestSize)
     firstBBlock=hugeBlock;
     return DATA(hugeBlock);
   }
-  return alloc(requestSize);
+  return alloc(requestSize+requestSize%4); //to align mem blocks
 }
 

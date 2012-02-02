@@ -52,7 +52,7 @@ static void release(struct block * usedBlock){
     }
   }  
 }
-void gfree(void * memory) {
+void free(void * memory) {
   struct block * memBlock;
   struct bblock * hugeBlock;
   TRACE("Block to free in memory at %p.\n",memory);

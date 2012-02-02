@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <gmem.h>
 #include "block.h" //for testing purposes only
-#include "gmem.h"
+//#include "gmem.h"
 
-#define alloc galloc
-#define free gfree
+#define alloc malloc
+#define free free
 struct list{
   long long value;
   struct list * next;
@@ -16,56 +16,53 @@ int main(int argc, char * argv[])
 
   int * a; 
   struct list * first;
-  /*
-  struct list * i;
   int * b;
   int * c;
-  a = galloc(sizeof(int));
+  a = malloc(sizeof(int));
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",a);
-  b = galloc(2*sizeof(int));
+  b = malloc(2*sizeof(int));
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",b);
-  c = galloc(sizeof(int));
+  c = malloc(sizeof(int));
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",c);
   *c = 4;
-  gfree(a);
+  free(a);
   printUsedList();
   printFreeList();
   printf("\n");
-  a = galloc(2);
+  a = malloc(2);
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",b);
-  gfree(a);
+  free(a);
   printUsedList();
   printFreeList();
   printf("\n");
-  gfree(c);
+  free(c);
   printUsedList();
   printFreeList();
   printf("\n");
-  gfree(b);
+  free(b);
   printUsedList();
   printFreeList();
   printf("\n");
-  a = galloc(sizeof(int));
+  a = malloc(sizeof(int));
   printUsedList();
   printFreeList();
   printf("Got pointer to %p.\n\n",a);
   printUsedList();
   printFreeList();
+  /*
   printf("Got pointer to %p.\n\n",first);
   first->next=NULL;
   first->value=0;
-  */
   first = alloc(sizeof(struct list));
   a = alloc(sizeof(int));
-  /*
   for (*a=1; *a<150000; (*a)++){
     i=alloc(sizeof(struct list));   
     i->value=*a;
