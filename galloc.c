@@ -6,9 +6,17 @@
 static void * blkalloc(int blocksize)
 {
   void* addr = NULL;
-  TRACE("Old break address is %p\n",sbrk(0));
-  addr = sbrk(blocksize);
-  TRACE("New break address is %p\n",sbrk(0));
+  //TRACE("Old break address is %p\n",sbrk(0));
+  //addr = sbrk(blocksize);
+  TRACE("Mapping 0x%x bytes of memory\n",blocksize);
+  addr=mmap(
+    0, //Let the kernel decide which address to use for this mapping
+    blocksize, //Length of memory thus allocated
+    PROT_READ | PROT_WRITE, //Memory won't be executable
+    MAP_PRIVATE | MAP_ANONYMOUS, //Just rtfm...
+    -1,0);
+  TRACE("Got memory, at address %p\n",addr);
+  //TRACE("New break address is %p\n",sbrk(0));
   return addr;
 }
 
@@ -95,7 +103,7 @@ static void * alloc(int requestSize)
   TRACE("Suitable block available at %p.\n",i);
   return DATA(i);
 }
-void * malloc(int requestSize)
+void * gmalloc(int requestSize)
 {
   struct bblock * hugeBlock;
   TRACE("0x%x bytes requested\n", requestSize);

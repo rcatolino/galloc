@@ -1,10 +1,11 @@
 CC=gcc #Compiler
 EDL=gcc #Linker
 AR=ar #Archiver
+ARFLAGS=rcs
 CCFLAGS=-Wall -m32 -fpic #Compiler options
 EDLFLAGS=-Wall -m32 #Linker options
 EXE=test #Binary name
-LIB=libgmem.so#Static library name
+LIB=libgmem.a#Static library name
 DEFINES=NODEBUG #Preprocessor definitions
 ECHO=@echo
 
@@ -21,12 +22,13 @@ install : $(LIB)
 
 $(EXE): $(EOBJ)
 	@echo building $<
-	$(EDL)  -o $(EXE) $(EDLFLAGS) $(EOBJ) -lgmem
+	$(EDL)  -o $(EXE) $(EDLFLAGS) $(EOBJ) $(LIB)
 	@echo done
 
 $(LIB): $(LOBJ)
 	@echo building $<
-	$(CC) -m32 -shared -Wl,-soname,$(LIB) -o $(LIB).1.0.1 $(LOBJ)
+	#$(CC) -m32 -shared -Wl,-soname,$(LIB) -o $(LIB).1.0.1 $(LOBJ)
+	$(AR) $(ARFLAGS) $(LIB) $(LOBJ)
 	@echo done
 
 %.o : %.c *.h
