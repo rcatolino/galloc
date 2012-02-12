@@ -108,7 +108,7 @@ void * malloc(int requestSize)
   }
   if (requestSize>MMAP_THRESHOLD)
   {
-    TRACE("Mapping 0x%lx bytes of memory\n",requestSize+sizeof(struct block) );
+    TRACE("Mapping 0x%x bytes of memory\n",requestSize+sizeof(struct block) );
     hugeBlock=mmap(
     0, //Let the kernel decide which address to use for this mapping
     requestSize+sizeof(struct bblock), //Length of memory thus allocated
