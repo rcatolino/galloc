@@ -5,7 +5,7 @@ ARFLAGS=rcs
 CCFLAGS=-Wall -m32 -fpic #Compiler options
 EDLFLAGS=-Wall -m32 #Linker options
 EXE=test #Binary name
-LIB=libgmem.a#Static library name
+LIB=libgmem.so#Static library name
 DEFINES=NODEBUG #Preprocessor definitions
 ECHO=@echo
 
@@ -15,20 +15,20 @@ LOBJ=galloc.o gfree.o utils.o
 lib : $(LIB)
 
 install : $(LIB)
-	@cp ./libgmem.so.1.0.1 /usr/lib32/
-	@cp gmem.h /usr/include
+	@cp ./libgmem.so.1 /usr/lib32/
+	@cp gmem.h /usr/include/
 	@echo Updating ld...
-	ldconfig -n /usr/lib32/
+	ldconfig 
 
 $(EXE): $(EOBJ)
 	@echo building $<
-	$(EDL)  -o $(EXE) $(EDLFLAGS) $(EOBJ) $(LIB)
+	$(EDL) -o $(EXE) $(EDLFLAGS) $(EOBJ) -lgmem
 	@echo done
 
 $(LIB): $(LOBJ)
 	@echo building $<
-	#$(CC) -m32 -shared -Wl,-soname,$(LIB) -o $(LIB).1.0.1 $(LOBJ)
-	$(AR) $(ARFLAGS) $(LIB) $(LOBJ)
+	$(CC) -m32 -shared -Wl,-soname,$(LIB) -o $(LIB).1 $(LOBJ)
+	#$(AR) $(ARFLAGS) $(LIB) $(LOBJ)
 	@echo done
 
 %.o : %.c *.h
