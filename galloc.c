@@ -52,6 +52,7 @@ static struct block * split(struct block * freeBlock, int newBlockSize)
     TRACE("Free block %p is too small to shrink,\
  move it to used linked list instead\n",freeBlock);
     removeFromList(freeBlock);
+    TRACE("firstUsedBlock : %p\n",firstUsedBlock);
     freeBlock->next=firstUsedBlock; //Add it in front of used block list
     freeBlock->prev=NULL;
     firstUsedBlock->prev=freeBlock;
@@ -82,6 +83,7 @@ static void * alloc(int requestSize)
   //Best Fit, Test wether we have enough memory for request :
   for (i=firstFreeBlock; i!=NULL; i=i->next)
   {
+    TRACE("i->next : %p\n",i->next);
     if (i->size>=requestSize && i->size<bestSize) //This block is ok.
     {
       TRACE("Found good block with 0x%x bytes free.\n",i->size);
@@ -114,7 +116,7 @@ void * gmalloc(int requestSize)
     firstFreeBlock=getBlock(NULL);
     initialized=1;
   }
-  if (requestSize>MMAP_THRESHOLD)
+  if (requestSize>=MMAP_THRESHOLD-sizeof(struct block))
   {
     TRACE("Mapping 0x%x bytes of memory\n",requestSize+sizeof(struct block) );
     hugeBlock=mmap(
@@ -129,6 +131,6 @@ void * gmalloc(int requestSize)
     firstBBlock=hugeBlock;
     return DATA(hugeBlock);
   }
-  return alloc(requestSize+requestSize%4); //to align mem blocks
+  return alloc(requestSize/*+requestSize%4*/); //to align mem blocks
 }
 

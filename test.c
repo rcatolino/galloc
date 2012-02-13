@@ -18,6 +18,9 @@ int main(int argc, char * argv[])
   struct list * first;
   int * b;
   int * c;
+  a=gmalloc(0x2000-0x0a);
+  memset(a,'a',0x2000-0x0a);
+  gfree(a);
   a = gmalloc(sizeof(int));
   printUsedList();
   printFreeList();
@@ -78,9 +81,6 @@ int main(int argc, char * argv[])
   printf("\n");
   */
   gfree(first);
-  gfree(a);
-  a=gmalloc(MMAP_THRESHOLD+10);
-  memset(a,'a',MMAP_THRESHOLD);
   gfree(a);
   return 0;
 }
